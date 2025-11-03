@@ -31,6 +31,7 @@ public class User extends BaseEntity {
 
     private String phone;
 
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -50,4 +51,7 @@ public class User extends BaseEntity {
     private Set<Order> orders = new HashSet<>();
 
 
+    public String getUsername() {
+        return phone;
+    }
 }
