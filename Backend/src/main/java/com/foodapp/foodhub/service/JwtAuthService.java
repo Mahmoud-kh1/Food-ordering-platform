@@ -1,6 +1,8 @@
 package com.foodapp.foodhub.service;
 
+import com.foodapp.foodhub.entity.Token;
 import com.foodapp.foodhub.entity.User;
+import com.foodapp.foodhub.enums.TokenType;
 import com.foodapp.foodhub.repository.TokenRepository;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,12 @@ public class JwtAuthService {
 
     @Value("${jwt.refresh.expiration}")
     private long refreshExpiration;
+    private TokenRepository tokenRepository;
+
+    @Autowired
+    public JwtAuthService(TokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -78,9 +86,13 @@ public class JwtAuthService {
                 .compact();
     }
 
-    public boolean isTokenValid(String token, User user) {
+    public boolean isTokenValid(String token, User user, TokenType type) {
         final String username = extractUsername(token);
-        return (username.equals(user.getUsername())) && !isTokenExpired(token);
+        Token optionalToken = tokenRepository.findByToken(token);
+        if(optionalToken == null || optionalToken.getTokenType() != type) {
+            return false;
+        }
+        return (username.equals(user.getUsername())) && !isTokenExpired(token) && !optionalToken.isExpired() && !optionalToken.isRevoked();
     }
 
     private boolean isTokenExpired(String token) {

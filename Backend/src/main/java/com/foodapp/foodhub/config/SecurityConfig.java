@@ -26,12 +26,16 @@ public class SecurityConfig {
                         authorizeConfig ->{
                             authorizeConfig.requestMatchers("/api/auth/login").permitAll();
                             authorizeConfig.requestMatchers("/api/auth/refresh").permitAll();
+                            authorizeConfig.requestMatchers("/api/auth/logout").permitAll();
+                            authorizeConfig.requestMatchers("/api/auth/forget-password").permitAll();
+                            authorizeConfig.requestMatchers("/api/auth/reset-password").permitAll();
+
                             authorizeConfig.anyRequest().authenticated();
                           }
                         )
                 .authenticationProvider(userAuthenticationProvider)
                         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-//           http.httpBasic(customizer ->{});
+           http.httpBasic(customizer ->{});
 
         return http.build();
     }
