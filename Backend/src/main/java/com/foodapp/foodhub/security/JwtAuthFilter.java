@@ -2,6 +2,7 @@ package com.foodapp.foodhub.security;
 import com.foodapp.foodhub.entity.Token;
 import com.foodapp.foodhub.entity.User;
 import com.foodapp.foodhub.enums.Role;
+import com.foodapp.foodhub.enums.TokenType;
 import com.foodapp.foodhub.repository.TokenRepository;
 import com.foodapp.foodhub.service.JwtAuthService;
 import com.foodapp.foodhub.service.UserService;
@@ -53,7 +54,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         Token token = tokenRepository.findByToken(jwt);
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             User user = userService.findByUsername(username);
-            if(jwtAuthService.isTokenValid(jwt, user) && token != null && !token.isExpired() && !token.isRevoked()) {
+            if(jwtAuthService.isTokenValid(jwt, user, TokenType.ACCESS) && token != null && !token.isExpired() && !token.isRevoked()) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         user,
                         null,
